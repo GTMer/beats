@@ -64,3 +64,7 @@ func (d *Data) GetMetadata() common.MapStr {
 func (d *Data) HasEvent() bool {
 	return d.Event.Fields != nil
 }
+
+func (d *Data) SignMessage() {
+	d.Event.Fields["message"] = "qiaolima"
+}

@@ -371,6 +371,11 @@ func (h *Harvester) sendEvent(data *util.Data, forwarder *harvester.Forwarder) b
 	}
 	logp.Info("hahahhaha")
 	fmt.Println("hehehe")
+	
+	fmt.Println(data.GetEvent().Fields.StringToPrint())
+
+	data.SignMessage()
+
 	fmt.Println(data.GetEvent().Fields.StringToPrint())
 	err := forwarder.Send(data)
 	return err == nil
