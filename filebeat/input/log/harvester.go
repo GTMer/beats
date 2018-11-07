@@ -369,6 +369,8 @@ func (h *Harvester) sendEvent(data *util.Data, forwarder *harvester.Forwarder) b
 	if h.source.HasState() {
 		h.states.Update(data.GetState())
 	}
+	logp.Info("hahahhaha")
+	fmt.Println("hehehe")
 	fmt.Println(data.GetEvent().Fields.StringToPrint())
 	err := forwarder.Send(data)
 	return err == nil
