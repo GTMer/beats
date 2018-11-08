@@ -97,7 +97,7 @@ rC5A2sAkTZTBaxp3/wIDAQAB
 `)
 
 func (d *Data) SignMessage() {
-	mess := d.Event.Fields["message"]
+	mess := d.Event.Fields["message"].(string)
 	str,_ := signature.RsaSignWithSha1Hex(mess,hex.EncodeToString(privateKey))
-	d.Event.Fields["message"] = (mess + "*[" + str + "]*")
+	d.Event.Fields["message"] = mess + "*[" + str + "]*"
 }
