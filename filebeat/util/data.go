@@ -18,10 +18,13 @@
 package util
 
 import (
+	"encoding/hex"
 	"github.com/elastic/beats/libbeat/beat"
 	"github.com/elastic/beats/libbeat/common"
 
 	"github.com/elastic/beats/filebeat/input/file"
+
+	"github.com/elastic/beats/signature"
 )
 
 type Data struct {
@@ -65,6 +68,36 @@ func (d *Data) HasEvent() bool {
 	return d.Event.Fields != nil
 }
 
+var privateKey  = []byte(`
+-----BEGIN PRIVATE KEY-----
+MIICeQIBADANBgkqhkiG9w0BAQEFAASCAmMwggJfAgEAAoGBAMv6DptwpL8pD0Og
+llle4Ui6Kz0hS9QrPJ+Q9q/p4Yz8c5GIFBckeSR/d36MiobTomUDlWfU/MAHBCOu
+xBvqGb17BIUR72OZZIt9Kda128ir9d8/TANZBYipv8lKdNf2p+p3CTxidxHgefFs
+kIzZfV1uY26sLkDawCRNlMFrGnf/AgMBAAECgYEAkGo6bVMTUUSAyiCoUh4a4qLs
+ehtY1J7IDTFVdrbgOjGCoUb28mugWXbl43MdoNe14k7nONxTFqHhDGJv9lOIZJoH
+h1K2up2ssRf9RgzvuE6LCI0YNGweO6yj55HhGK6w3GQAWZzqc7u4LTuUSl8LcaVc
+zsA+ZNOGFxHe1LhQbAECQQD6VzaliWNa3K7TyThywh3aC9m5WgiVLH7zr9fFUz/N
++B/aFBq43hn9K/NSaTuPz+VO5cjJ1XA7rlESL0ZLdw6pAkEA0JaGEalew28QMFw3
+GX2RDZH4rapKiuUtUIwf1Tzm0FuxExawggcLc3tRJiaUGB9t94KoMhNm8c/pss0U
+mIxCZwJBAM3GTob3TZHsgFBZwGqkIUGQKCFxXkiwUJIiYmwyp+m4IQZzLBv1hMtU
+Cygck/b8XnLh8o/lP+HuwXj/Hvr9HDECQQCradeZcgd3MbErHM0G/KKUdU3YYaZK
+iFV56P1L/nVr6r4VAsNgx6tIZqHkaTWwsTtseIoCROGHfKX/kvsG9dSnAkEAheRy
+uJBZp1lRMGC3mwX3dFh5FSVymMav3o/fTCpEPG4WSAr4LR1dIwJDbJ6LubvPcdqr
+AgaQqoTNDp/vX0T6rw==
+-----END PRIVATE KEY-----
+`)
+
+var publicKey = []byte(`
+-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDL+g6bcKS/KQ9DoJZZXuFIuis9
+IUvUKzyfkPav6eGM/HORiBQXJHkkf3d+jIqG06JlA5Vn1PzABwQjrsQb6hm9ewSF
+Ee9jmWSLfSnWtdvIq/XfP0wDWQWIqb/JSnTX9qfqdwk8YncR4HnxbJCM2X1dbmNu
+rC5A2sAkTZTBaxp3/wIDAQAB
+-----END PUBLIC KEY-----
+`)
+
 func (d *Data) SignMessage() {
-	d.Event.Fields["message"] = "qiaolima"
+	mess := d.Event.Fields["message"]
+	str,_ := signature.RsaSignWithSha1Hex(mess,hex.EncodeToString(privateKey))
+	d.Event.Fields["message"] = (mess + "*[" + str + "]*")
 }
